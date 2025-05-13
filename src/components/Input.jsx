@@ -16,3 +16,13 @@ const InputVariants = cva([],{
     }
 }
 )
+
+const Input = ({className, intent, size, ...props}) => {
+    return (
+        <input
+            className={InputVariants({intent, size, className})}
+            {...props}
+        />
+    )
+}
+export default Input;

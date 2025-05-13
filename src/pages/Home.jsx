@@ -3,17 +3,50 @@ import { GoogleGenAI } from "@google/genai";
 
 // components
 import Button from "../components/Button";
+import Loader from "../components/Loader";
 
 export default function Home() {
   const apiKey = import.meta.env.VITE_GENAPI;
+  const [promptInfo, setPromptInfo] = useState({
+    sex:"",
+    age: 0,
+    height: 0,
+    weight: 0,
+    goalWeight: 0,
+    activityLevel: 0,
+    dietType:"",
+    allergies: [],
+    intolerances: [],
+    dislikes:[],
+    likes:[],
+    mealsPerDay: 0,
+    mealPrep: false,
+    budget: 0,
+    cuisine:"",
+    cookingSkill:0,
+    dietaryRestrictions:[],
+    mealPlanDuration:0,
+    mealPlanStartDate:"",
+    mealPlanEndDate:"",
+  });
   const [prompt, setPrompt]   = useState("");
   const [answer, setAnswer]   = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Speech synthesis
+  const synth = window.speechSynthesis;
+  const [synthesizing, setSynthesizing] = useState(false);
+  const [synthError, setSynthError] = useState(false);
+  const [synthText, setSynthText] = useState("");
+  const [synthVoice, setSynthVoice] = useState(null);
+  const [synthRate, setSynthRate] = useState(1);
+  const [synthPitch, setSynthPitch] = useState(1);
+  const [synthVolume, setSynthVolume] = useState(1);
+
 
   async function ask(e) {
     e.preventDefault();
-    if (!apiKey) return alert("Paste your OpenAI API key first!");
+    if (!apiKey) return console.log("Paste API key first!");
     setLoading(true); 
     setAnswer("");
     try {
@@ -41,16 +74,24 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-6 space-y-4">
-        {answer && (
+    <div>
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <h1 className="text-2xl font-bold text-center">FitAura</h1>
+        <h2 className="text-lg text-center">Votre assistant personnel de nutrition</h2>
+        <Button label="Commencer" custom="w-full" onClick={()=>window.location.href="/test"} />
+      </div>
+      {/*
+      <div>
+      {answer && (
         <pre className="whitespace-pre-wrap bg-gray-50 p-4 rounded">{answer}</pre>
       )}
+      </div>
       <form onSubmit={ask} className="flex gap-4">
         <textarea
           required
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          className="w-full h-14 border rounded p-2"
+          className="w-full h-fit border rounded p-2"
           placeholder="Quel régime alimentaire voulez-vous ?"
         />
         <Button
@@ -58,6 +99,10 @@ export default function Home() {
             disabled={loading}
         />
       </form>
+      {loading && (
+        <Loader />
+      )}
+      */}
     </div>
   );
 }
