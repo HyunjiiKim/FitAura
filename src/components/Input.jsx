@@ -13,15 +13,20 @@ const InputVariants = cva([],{
             lg: [],
             xl: []
         }
+    },
+    defaultVariants:{
+        intent: "default",
+        size: "md"
     }
 }
 )
 
-const Input = ({className, intent, size, ...props}) => {
+const Input = ({custom, intent, size, type, placeholder}) => {
     return (
         <input
-            className={InputVariants({intent, size, className})}
-            {...props}
+            className={`${InputVariants({intent, size,})} ${custom}`}
+            type={type??"text"}
+            placeholder={placeholder}
         />
     )
 }

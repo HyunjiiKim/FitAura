@@ -1,1 +1,80 @@
 @import "tailwindcss";
+
+/* ----- local fonts ------ */
+@font-face {
+  font-family: "PostNoBills";
+  src: url("assets/fonts/post-no-bills/postnobillscolombo-light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PostNoBills";
+  src: url("assets/fonts/post-no-bills/postnobillscolombo-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PostNoBills";
+  src: url("assets/fonts/post-no-bills/postnobillscolombo-medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PostNoBills";
+  src: url("assets/fonts/post-no-bills/postnobillscolombo-semibold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PostNoBills";
+  src: url("assets/fonts/post-no-bills/postnobillscolombo-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PostNoBills";
+  src: url("assets/fonts/post-no-bills/postnobillscolombo-extrabold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AlbertSans";
+  src: url("assets/fonts/Albert_Sans/static/AlbertSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+    font-family: "AlbertSans";
+    src: url("assets/fonts/Albert_Sans/static/AlbertSans-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+
+
+/* Customized on tailwindcss */
+@theme {
+    /* fonts */
+    --font-sans: "AlbertSans";
+    --font-nobills: "PostNoBills", serif;
+    /* color */
+    --color-primary-1: #DFE2CF;
+    --color-primary-2: #B3B492;
+    --color-primary-3: #7F8063;
+    --color-secondary-1: #EBD8D0;
+    --color-secondary-2: #C6B8B2;
+    --color-secondary-3: #9D8E88;
+    --color-tertiary-1: #FFFBFF;
+    --color-tertiary-2: #EEDFEE;
+    --color-tertiary-3: #6F686D;
+}

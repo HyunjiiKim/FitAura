@@ -76,9 +76,10 @@ export default function Home() {
   return (
     <div>
       <div className="flex flex-col items-center justify-center h-screen p-4">
-        <h1 className="text-2xl font-bold text-center">FitAura</h1>
-        <h2 className="text-lg text-center">Votre assistant personnel de nutrition</h2>
-        <Button label="Commencer" custom="w-full" onClick={()=>window.location.href="/test"} />
+        <h1 className="text-4xl font-bold text-center font-nobills">FitAura</h1>
+        <div className="bg-tertiary-3 aspect-square w-20 rounded-full mt-4 mb-4"></div>
+        <h2 className="text-lg text-center mb-10">Votre assistant personnel de nutrition</h2>
+        <Button label="Commencer" custom="w-full text-tertiary-3" onClick={()=>window.location.href="/test"} />
       </div>
       {/*
       <div>
