@@ -2,7 +2,7 @@ import { cva } from "class-variance-authority";
 
 /** Base + variants */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded font-medium transition-colors " +
+  "inline-flex items-center justify-center rounded-lg font-regular transition-colors " +
   "focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
   {
     variants: {
@@ -13,7 +13,7 @@ const buttonVariants = cva(
         danger:    "bg-red-600 hover:bg-red-700 text-white"
       },
       size: {
-        xs: "px-2 py-1 text-xs",
+        xs: "px-[43px] py-[10px] text-xs w-[160px]",
         sm: "px-3 py-[6px] text-sm",
         md: "px-4 py-2 text-base",
         lg: "px-5 py-3 text-lg"

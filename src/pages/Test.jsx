@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { GoogleGenAI } from "@google/genai";
 
 import { buildNutritionCoachPrompt } from "../functions/buildNutritionCoachPrompt";
-import Input  from "../components/Input";
+import Input, { InputRadio }  from "../components/Input";
 import Button from "../components/Button";
 import Loader from "../components/Loader";
+import LogoGray from "../components/Logo";
 
 const STEPS = ["personal", "goal", "diet", "schedule", "review"];
 
@@ -67,37 +68,39 @@ export default function Test({ profile, setProfile }) {
 
   /* ---------- UI ------------------------------------------------------ */
   return (
-    <div className="flex flex-col items-center p-6 w-full max-w-md mx-auto">
-      {/* ---------------- step 1 ---------------- */}
-      {step === "personal" && (
+    <div className="relative">
+      <div className="bg-white/25 w-screen h-screen absolute top-0 right-0 pointer-events-none" />
+      <div className="p-4">
+           {step === "personal" && (
         <form
-          className="flex flex-col gap-4 w-full"
+          className="mt-20 flex flex-col gap-10 w-full z-10 justify-center items-center"
           onSubmit={(e) => { e.preventDefault(); setStepIndex(1); }}
         >
-          <h1 className="text-2xl font-bold">1 / 5 — Informations personnelles</h1>
+          <LogoGray
+            title="Information personnelles"
+            description="Dites-nous un peu plus sur vous pour que l’on puisse analyser votre profil sportif."
+            />
+          <div className="flex gap-4">
+            <InputRadio
+              id="sex-male"
+              name="sex"
+              value="male"
+              label="Homme"
+              checked={profile.sex === "male"}
+              onChange={handle("sex")}
+            />
 
-          <div className="flex justify-between">
-            <label>
-              <input
-                type="radio"
-                name="sex"
-                value="male"
-                checked={profile.sex === "male"}
-                onChange={handle("sex")}
-              /> Homme
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="sex"
-                value="female"
-                checked={profile.sex === "female"}
-                onChange={handle("sex")}
-              /> Femme
-            </label>
+            <InputRadio
+              id="sex-female"
+              name="sex"
+              value="female"
+              label="Femme"
+              checked={profile.sex === "female"}
+              onChange={handle("sex")}
+            />
           </div>
 
-          <Input placeholder="Âge (années)"  type="number" value={profile.age    || ""} onChange={handle("age")} />
+          <Input placeholder="Âge (années)"  type="number" value={profile.age    || ""} onChange={handle("age")} min={1930} max={2025} />
           <Input placeholder="Taille (cm)"   type="number" value={profile.height || ""} onChange={handle("height")} />
           <Input placeholder="Poids (kg)"    type="number" value={profile.weight || ""} onChange={handle("weight")} />
 
@@ -203,13 +206,7 @@ export default function Test({ profile, setProfile }) {
           {loading && <Loader className="self-center" />}
         </div>
       )}
-
-      {/* ---------------- progress bar ---------------- */}
-      <progress
-        value={stepIndex + 1}
-        max={STEPS.length}
-        className="w-full h-2 mt-8 accent-emerald-500"
-      />
+      </div>
     </div>
   );
 }
