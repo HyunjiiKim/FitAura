@@ -1,47 +1,215 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { GoogleGenAI } from "@google/genai";
 
-// components
-import Input from "../components/Input";
+import { buildNutritionCoachPrompt } from "../functions/buildNutritionCoachPrompt";
+import Input  from "../components/Input";
 import Button from "../components/Button";
+import Loader from "../components/Loader";
 
-const Test = () => {
-    const [showPage, setShowPage] = useState({
-        personalInfo: true,
-        goal: false,
-    })
-    return(
-        <div id="test" className="flex flex-col justify-center items-center p-4">
-            { showPage.personalInfo &&
-            (
-                <div id="personalInfo" className="mt-10 w-80 flex flex-col gap-5">
-                    <h1 className="font-bold text-2xl">Informations personnelles</h1>
-                    <div className="flex justify-between w-50">
-                        <label htmlFor="male">
-                            <input type="radio" name="sex" id="0" value="male" />
-                            Homme
-                        </label>
-                        <label htmlFor="male">
-                            <input type="radio" name="sex" id="1" value="female" />
-                            Femme
-                        </label>
-                    </div>
-                    <Input placeholder="age" />
-                    <Input placeholder="taille"/>
-                    <Input placeholder="poids" />
-                    <Button label="Ensuite" onClick={()=>{setShowPage({personalInfo:false, goal: true })}} />
-                </div>
-            )}
-            { showPage.goal &&
-            (
-                <div id="goal"className="mt-10 w-80 flex flex-col gap-5 items-center">
-                    <h1 className="font-bold text-2xl">Goal</h1>
-                    <Button label="Ensuite" onClick={()=>{setShowPage({personalInfo:false, goal: true })}} />
-                    <span onClick={()=>{setShowPage({personalInfo:true, goal: false })}}>Retour</span>     
-                </div>
-            )}
-       
+const STEPS = ["personal", "goal", "diet", "schedule", "review"];
+
+export default function Test({ profile, setProfile }) {
+  const [stepIndex, setStepIndex] = useState(0);
+  const [loading,   setLoading]   = useState(false);
+  const nav = useNavigate();
+
+  const step = STEPS[stepIndex];
+
+  /* ---------- generic field handlers ---------------------------------- */
+  const handle = (field) => (e) => {
+    const val =
+      e.target.type === "number"   ? Number(e.target.value) :
+      e.target.type === "checkbox" ? e.target.checked       :
+      e.target.value;
+
+    setProfile((p) => ({ ...p, [field]: val }));
+  };
+
+  const handleList = (field) => (e) => {
+    const list = e.target.value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    setProfile((p) => ({ ...p, [field]: list }));
+  };
+
+  /* ---------- call Gemini via @google/genai --------------------------- */
+  async function generatePlan() {
+    const apiKey = import.meta.env.VITE_GENAPI;
+    if (!apiKey) {
+      alert("Ajoutez VITE_GENAPI dans votre fichier .env");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const prompt = buildNutritionCoachPrompt(profile);
+
+      /* Initialise the SDK */
+      const ai = new GoogleGenAI({ apiKey });         // browser-safe preview
+      const response = await ai.models.generateContent({
+        model: "gemini-1.5-flash",
+        contents: prompt
+      });
+
+      /* .text is a string in Node, a function in browser builds — handle both */
+      const answer =
+        typeof response.text === "function" ? response.text() : response.text;
+
+      nav("/results", { state: { answer } });
+    } catch (err) {
+      alert("Erreur : " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /* ---------- UI ------------------------------------------------------ */
+  return (
+    <div className="flex flex-col items-center p-6 w-full max-w-md mx-auto">
+      {/* ---------------- step 1 ---------------- */}
+      {step === "personal" && (
+        <form
+          className="flex flex-col gap-4 w-full"
+          onSubmit={(e) => { e.preventDefault(); setStepIndex(1); }}
+        >
+          <h1 className="text-2xl font-bold">1 / 5 — Informations personnelles</h1>
+
+          <div className="flex justify-between">
+            <label>
+              <input
+                type="radio"
+                name="sex"
+                value="male"
+                checked={profile.sex === "male"}
+                onChange={handle("sex")}
+              /> Homme
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="sex"
+                value="female"
+                checked={profile.sex === "female"}
+                onChange={handle("sex")}
+              /> Femme
+            </label>
+          </div>
+
+          <Input placeholder="Âge (années)"  type="number" value={profile.age    || ""} onChange={handle("age")} />
+          <Input placeholder="Taille (cm)"   type="number" value={profile.height || ""} onChange={handle("height")} />
+          <Input placeholder="Poids (kg)"    type="number" value={profile.weight || ""} onChange={handle("weight")} />
+
+          <Button type="submit" label="Suivant" />
+        </form>
+      )}
+
+      {/* ---------------- step 2 ---------------- */}
+      {step === "goal" && (
+        <form
+          className="flex flex-col gap-4 w-full"
+          onSubmit={(e) => { e.preventDefault(); setStepIndex(2); }}
+        >
+          <h1 className="text-2xl font-bold">2 / 5 — Objectifs</h1>
+
+          <Input placeholder="Poids cible (kg)"        type="number" value={profile.goalWeight        || ""} onChange={handle("goalWeight")} />
+          <Input placeholder="Durée du plan (jours)"   type="number" value={profile.mealPlanDuration  || ""} onChange={handle("mealPlanDuration")} />
+
+          <div className="flex justify-between">
+            <Button type="button" label="Retour" onClick={() => setStepIndex(0)} />
+            <Button type="submit"  label="Suivant" />
+          </div>
+        </form>
+      )}
+
+      {/* ---------------- step 3 ---------------- */}
+      {step === "diet" && (
+        <form
+          className="flex flex-col gap-4 w-full"
+          onSubmit={(e) => { e.preventDefault(); setStepIndex(3); }}
+        >
+          <h1 className="text-2xl font-bold">3 / 5 — Préférences alimentaires</h1>
+
+          <Input placeholder="Type de régime (ex. végétarien)"
+                 value={profile.dietType || ""} onChange={handle("dietType")} />
+
+          <Input placeholder="Allergies (séparées par des virgules)"
+                 value={profile.allergies?.join(", ") || ""}
+                 onChange={handleList("allergies")} />
+
+          <Input placeholder="Intolérances (séparées par des virgules)"
+                 value={profile.intolerances?.join(", ") || ""}
+                 onChange={handleList("intolerances")} />
+
+          <Input placeholder="Je n’aime pas… (séparées par des virgules)"
+                 value={profile.dislikes?.join(", ") || ""}
+                 onChange={handleList("dislikes")} />
+
+          <div className="flex justify-between">
+            <Button type="button" label="Retour" onClick={() => setStepIndex(1)} />
+            <Button type="submit"  label="Suivant" />
+          </div>
+        </form>
+      )}
+
+      {/* ---------------- step 4 ---------------- */}
+      {step === "schedule" && (
+        <form
+          className="flex flex-col gap-4 w-full"
+          onSubmit={(e) => { e.preventDefault(); setStepIndex(4); }}
+        >
+          <h1 className="text-2xl font-bold">4 / 5 — Organisation & budget</h1>
+
+          <Input placeholder="Repas / jour" type="number"
+                 value={profile.mealsPerDay || ""} onChange={handle("mealsPerDay")} />
+
+          <label className="flex gap-2 items-center">
+            <input type="checkbox"
+                   checked={profile.mealPrep}
+                   onChange={handle("mealPrep")} />
+            Je peux faire du meal-prep / batch-cooking
+          </label>
+
+          <Input placeholder="Budget € / jour" type="number"
+                 value={profile.budget || ""} onChange={handle("budget")} />
+
+          <Input placeholder="Cuisine préférée"
+                 value={profile.cuisine || ""} onChange={handle("cuisine")} />
+
+          <div className="flex justify-between">
+            <Button type="button" label="Retour" onClick={() => setStepIndex(2)} />
+            <Button type="submit"  label="Suivant" />
+          </div>
+        </form>
+      )}
+
+      {/* ---------------- step 5 ---------------- */}
+      {step === "review" && (
+        <div className="flex flex-col gap-6 w-full">
+          <h1 className="text-2xl font-bold">5 / 5 — Vérification</h1>
+
+          <pre className="bg-gray-50 p-4 rounded text-sm whitespace-pre-wrap max-h-60 overflow-y-auto">
+            {JSON.stringify(profile, null, 2)}
+          </pre>
+
+          <div className="flex justify-between">
+            <Button label="Retour"     onClick={() => setStepIndex(3)} />
+            <Button label={loading ? "Génération…" : "Terminer"}
+                    disabled={loading}
+                    onClick={generatePlan} />
+          </div>
+
+          {loading && <Loader className="self-center" />}
         </div>
-    )
-}
+      )}
 
-export default Test;
+      {/* ---------------- progress bar ---------------- */}
+      <progress
+        value={stepIndex + 1}
+        max={STEPS.length}
+        className="w-full h-2 mt-8 accent-emerald-500"
+      />
+    </div>
+  );
+}

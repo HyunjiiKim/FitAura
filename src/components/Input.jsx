@@ -1,33 +1,41 @@
 import { cva } from "class-variance-authority";
 
-const InputVariants = cva([],{
-    variants: {
-        intent:{
-            default: [],
-            error: [],
-        },
-        size: {
-            xs: [],
-            sm: [],
-            md: [],
-            lg: [],
-            xl: []
-        }
+const inputVariants = cva([], {
+  variants: {
+    intent: {
+      default: [],
+      error: []
     },
-    defaultVariants:{
-        intent: "default",
-        size: "md"
+    size: {
+      xs: [],
+      sm: [],
+      md: [],
+      lg: [],
+      xl: []
     }
-}
-)
+  },
+  defaultVariants: {
+    intent: "default",
+    size: "md"
+  }
+});
 
-const Input = ({custom, intent, size, type, placeholder}) => {
-    return (
-        <input
-            className={`${InputVariants({intent, size,})} ${custom}`}
-            type={type??"text"}
-            placeholder={placeholder}
-        />
-    )
+export default function Input({
+  custom = "",
+  intent,
+  size,
+  type = "text",
+  placeholder = "",
+  value,
+  onChange
+}) {
+  return (
+    <input
+      className={`${inputVariants({ intent, size })} ${custom}`}
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+    />
+  );
 }
-export default Input;
