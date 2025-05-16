@@ -107,7 +107,7 @@ export default function Test({ profile, setProfile }) {
             <Input placeholder="Taille (cm)"  type="number" value={profile.height || ""}  onChange={handle("height")} />
             <Input placeholder="Poids (kg)"   type="number" value={profile.weight || ""}  onChange={handle("weight")} />
 
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 mb-20">
               <Button type="submit" label="Suivant" />
               <span className="text-tertiary-3 cursor-pointer" onClick={() => navigate("/")}>Retour</span>
             </div>
@@ -146,7 +146,7 @@ export default function Test({ profile, setProfile }) {
               ))}
             </div>
 
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 mb-20">
               <Button type="submit" label="Suivant" />
               <span className="text-tertiary-3 cursor-pointer" onClick={() => setStepIndex(0)}>Retour</span>
             </div>
@@ -184,7 +184,7 @@ export default function Test({ profile, setProfile }) {
               ]}
             />
 
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 mb-20">
               <Button type="submit" label="Générer mon plan" />
               <span className="text-tertiary-3 cursor-pointer" onClick={() => setStepIndex(1)}>Retour</span>
             </div>
