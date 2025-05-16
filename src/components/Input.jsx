@@ -76,3 +76,34 @@ export function InputRadio({
       </label>
     );
   }
+
+  export function InputSelect({
+    id,
+    name,
+    value,
+    onChange,
+    options = [],
+    className = "",
+  }) {
+    const base =
+      "inline-flex items-center justify-center py-2 rounded-md border cursor-pointer select-none " +
+      "transition-colors border-none text-tertiary-3 bg-white px-[43px] w-[250px] text-center";
+  
+    const active   = "bg-primary-1";
+    const inactive = "bg-white"
+    return (
+      <select
+        id={id}
+        name={name}
+        value={value}
+        onChange={onChange}
+        className={`${base} ${className}`}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    );
+  }

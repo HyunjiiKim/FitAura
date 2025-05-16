@@ -1,46 +1,33 @@
+// src/functions/buildNutritionCoachPrompt.js
+/**
+ * Returns ONE string prompt ready for model.generateContent().
+ * We keep all “system-style” instructions at the top, then add the user profile.
+ */
 export function buildNutritionCoachPrompt(profile) {
-    const list = (arr) => (arr && arr.length ? arr.join(", ") : "none");
-  
-    return `
-  You are a certified nutritionist and strength-and-conditioning coach.
-  Read the profile below and return:
-  
-  • A ${profile.mealPlanDuration}-day meal plan (breakfast, lunch, dinner, snacks)  
-    – calories & macros per meal  
-    – one consolidated grocery list for the whole plan  
-  • A progressive workout schedule (strength + cardio) for the same duration  
-  • All advice MUST respect allergies, intolerances, dislikes, dietary restrictions, budget and cooking skill.
-  
-  ---  USER PROFILE  ---
-  Sex: ${profile.sex || "unspecified"}
-  Age: ${profile.age}
-  Height: ${profile.height} cm
-  Current weight: ${profile.weight} kg
-  Goal weight: ${profile.goalWeight} kg
-  
-  Physical-activity level (0 sedentary → 4 athlete): ${profile.activityLevel}
-  Diet type: ${profile.dietType || "unspecified"}
-  
-  Allergies: ${list(profile.allergies)}
-  Intolerances: ${list(profile.intolerances)}
-  Dislikes: ${list(profile.dislikes)}
-  Likes: ${list(profile.likes)}
-  
-  Meals per day: ${profile.mealsPerDay}
-  OK with batch cooking / meal-prep?: ${profile.mealPrep ? "yes" : "no"}
-  
-  Budget: €${profile.budget} per day
-  Preferred cuisine(s): ${profile.cuisine || "none"}
-  Cooking skill (0 novice → 3 advanced): ${profile.cookingSkill}
-  
-  Dietary restrictions: ${list(profile.dietaryRestrictions)}
-  
-  Plan duration: ${profile.mealPlanDuration} days
-  Start date: ${profile.mealPlanStartDate || "open"}
-  End date: ${profile.mealPlanEndDate || "open"}
-  ------------------------
-  
-  ❗ Return two top-level keys: “mealPlan” and “workoutPlan” in french.
-  Each should contain an array of daily objects.`;
-  }
-  
+  return `
+Tu es un coach de nutrition et de sport.
+Réponds toujours en JSON strict — aucun texte avant ou après.
+Clés attendues : planRepasHebdomadaire, programmeEntrainement, podcastsRecommandes.
+
+Exemple minimal :
+{
+  "planRepasHebdomadaire": [
+    { "jour": "Lundi", "petitDejeuner": ["…"], "dejeuner": ["…"], "diner": ["…"] }
+  ],
+  "programmeEntrainement": {
+    "descriptionGenerale": "…",
+    "joursSpecifiques": [
+      { "jour": "Lundi", "exercices": ["…"] }
+    ]
+  },
+  "podcastsRecommandes": [
+    { "nom": "…", "categorie": "…", "description": "…" }
+  ]
+}
+
+Profil de l’utilisateur :
+${JSON.stringify(profile, null, 2)}
+
+Crée-lui un plan complet conforme aux clés demandées.
+`.trim();
+}
