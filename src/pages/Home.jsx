@@ -11,7 +11,6 @@ export default function Home() {
         <img src={Logo} alt="Futaura" />
         <p className="text-white absolute bottom-0">Your Fitness. Your Formula.</p>
       </div>
-
       <Button
         label="Commencer"
         intent="white"
